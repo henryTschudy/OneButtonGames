@@ -137,13 +137,9 @@ isPlayingBgm: true
   * }} Enemy
   */
 
-  /**
-  * @typedef {{
-   * pos: Vector
-   * speed: Vector
-   * isShield: true
-   * }} EnemyS
-   */
+ /**
+* @type  { Enemy [] }
+*/
 
   /**
   * @typedef {{
@@ -161,7 +157,6 @@ isPlayingBgm: true
   let beamsR;
   let beamTemp;
 let enemies;
-let enemiesS;
 let enemyI1;
 let enemyI2;
 let enemyIT;

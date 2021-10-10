@@ -220,7 +220,45 @@ options = {
   isPlayingBgm: true
   };
 
+   /**
+* @typedef {{
+  * pos: 0
+  * ring: 0
+  * vel: 0
+  * jump: 100
+  * }} Bubble
+  */
+  
+  /**
+  * @type  { Bubble [] }
+  */
+
+    /**
+* @typedef {{
+  * pos: 0
+  * ring: 0
+  * vel: 0
+  * }} Pickup
+  */
+  
+  /**
+  * @type  { Pickup [] }
+  */
+
+  let bubbles;
+  let pickups;
+  let player;
+
 function update() {
   if (!ticks) {
+    player = {
+      pos:0,
+      ring: 0,
+      vel: 0,
+      jump: 0,
+    }
   }
+
+
+
 }
