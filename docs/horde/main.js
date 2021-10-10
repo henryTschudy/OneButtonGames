@@ -67,12 +67,12 @@ p  p
   p p
 `,//g
 `
- c cc
-c cccc
-cc c c
-cccccc
-c cccc
- c c c
+ pp
+pppp
+p p
+pppppp
+pppp
+p p
 `,//h
 `
 
@@ -167,6 +167,8 @@ let enemyI2;
 let enemyIT;
 let enemyIB;
 let player;
+let scoreSkull;
+let scoreShoot;
 
 function update() {
   if (!ticks) {
@@ -237,6 +239,9 @@ function update() {
     enemyIB = {
       pos: S.HEIGHT-3 //only need vertical, otherwise copies enemyIT
     }
+
+    scoreSkull = 0;
+    scoreShoot = 0;
   }
 
   stars.forEach((s) => {
@@ -294,7 +299,7 @@ grass.forEach((g) => {
     player.faceRight = !player.faceRight;
     if(player.faceRight){player.spd = 1}
     else if (!player.faceRight){player.spd = -1}
-    enemyI1.spd=-0.1;
+    enemyI1.spd=-0.1;//reset Skull speed
     enemyI2.spd=0.1;
   }
 
@@ -333,8 +338,10 @@ grass.forEach((g) => {
   //set game over to enemy in player area, no hitbox necessary
 
   //score += 0.1;
-  if(score<(enemyI1.pos-S.WIDTH/2)){score=enemyI1.pos;}
-  if(score<abs(enemyI2.pos)-S.WIDTH/2){score=abs(enemyI2.pos);}
+  if(scoreSkull<(enemyI1.pos-S.WIDTH/2)){scoreSkull=enemyI1.pos;}
+  if(scoreSkull<abs(enemyI2.pos)-S.WIDTH/2){scoreSkull=abs(enemyI2.pos);}
+
+  score = scoreSkull + scoreShoot;
 
   if(enemyI1.pos<53||enemyI2.pos>47||enemyIT.pos.y>=player.pos.y-2){
     play("explosion");
