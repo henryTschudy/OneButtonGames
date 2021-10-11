@@ -67,13 +67,18 @@ LLLLLL
 `,//g gravestone
 ];
 
-const S = {
+const G = {
 	WIDTH: 100,
-	HEIGHT: 100
+	HEIGHT: 100,
+  PLAYER_FIRE_RATE: 10,
+  PLAYER_GUN_OFFSET: 3,
+  FBULLET_SPEED: 1.2,
+  ENEMY_MIN_BASE_SPEED: 0.5,
+  ENEMY_MAX_BASE_SPEED: 1.0
 };
 
 options = {
-  theme: 'dark',
+  theme: 'pixel',
   isPlayingBgm: true
 };
 
@@ -90,15 +95,145 @@ options = {
   */
 let ghost;
 let player;
+let fBullets = [];
+let enemies = [];
+let currentEnemySpeed = 0;
+let waveCount = 0;
+var ammo = 1;
 
 function update() {
   if (!ticks) {
     player = {
-      pos:vec(S.WIDTH/2,S.HEIGHT/2),
+      pos:vec(G.WIDTH/2,G.HEIGHT/2),
       Shooting: false,
       ammo: 100,
+      firingCooldown: G.PLAYER_FIRE_RATE,
     }
   }
 
+  // Initializing enemies
+  if (enemies.length === 0) {
+    currentEnemySpeed =
+        rnd(G.ENEMY_MIN_BASE_SPEED, G.ENEMY_MAX_BASE_SPEED) * difficulty;
+    let off = rndi(0, 17)
+    for (let i = 0; i < 17; i++) {
+        // Kind of useless if statement
+        if (i != off){
+            // Spawn Logic
+            // vector that contains two points
+            //  randomly select two points
+            var rand = rndi(0, 2)
+            var randx = rndi(0, 2)
+            var randy = rndi(0, 2)
+            const posX1 = rndi(-10, G.WIDTH + 10)
+            const posY1 = [rndi(-10, -5), rndi(G.HEIGHT + 5, G.HEIGHT + 10)]
+            const posX2 = [rndi(-10, -5), rndi(G.WIDTH + 5, G.WIDTH + 10)]
+            const posY2 = rndi(-10, G.HEIGHT + 10)
+            const spawn = [vec(posX1, posY1[randy]), vec(posX2[randx], posY2)]
+            const real_spawn = spawn[rand]
+            const start = vec(real_spawn.x, real_spawn.y)
+            enemies.push({ 
+                pos: real_spawn,
+                angle: real_spawn.angleTo(player.pos),
+                start: start
+             })
+        }
+    }
+  }
+    if (!input.isPressed){
+      player.pos = vec(input.pos.x, input.pos.y);
+    }
+    player.pos.clamp(0, G.WIDTH, 0, G.HEIGHT);
+
+    // Cooling down for the next shot
+    player.firingCooldown--;
+    // Time to fire the next shot
+    if (input.isPressed && ammo > 0 && player.firingCooldown <= 0) {
+        // Create the bullet
+        fBullets.push({
+            pos: vec(player.pos.x + 0.75, player.pos.y),
+            angle: player.pos.angleTo(input.pos)
+        });
+        // Reset the firing cooldown
+        player.firingCooldown = G.PLAYER_FIRE_RATE;
+        //ammo -= 1;
+
+        color("yellow");
+        // Generate particles
+        particle(
+            player.pos.x + 0.75, // x coordinate
+            player.pos.y, // y coordinate
+            4, // The number of particles
+            1, // The speed of the particles
+            player.pos.angleTo(input.pos), // The emitting angle
+            PI/4  // The emitting width
+        );
+    }
+
+    //Draw player
+    color("black");
+    char("a", player.pos);
+
+    // Updating and drawing bullets
+    fBullets.forEach((fb) => {
+        // Move the bullets upwards
+        fb.pos.x += G.FBULLET_SPEED * Math.cos(fb.angle);
+        fb.pos.y += G.FBULLET_SPEED * Math.sin(fb.angle);
+        
+        // Drawing
+        color("yellow");
+        box(fb.pos, 2);
+    });
+    remove(enemies, (e) => {
+        e.pos.x += currentEnemySpeed * Math.cos(e.angle);
+        e.pos.y += currentEnemySpeed * Math.sin(e.angle);
+        color("black");
+        // Shorthand to check for collision against another specific type
+        // Also draw the sprite
+        const isCollidingWithFBullets = char("b", e.pos).isColliding.rect.yellow;
+
+        // Check whether to make a small particle explosin at the position
+        if (isCollidingWithFBullets) {
+            color("yellow");
+            particle(e.pos);
+        }
+
+        // Also another condition to remove the object
+        var distX = Math.abs(e.start.x - e.pos.x)
+        var distY = Math.abs(e.start.y - e.pos.y)
+        console.log(e.pos.x)
+        console.log(e.start.x)
+        if (isCollidingWithFBullets || distX >= G.WIDTH + 90 || distY >= G.HEIGHT + 90){
+            var rand = rndi(0, 2)
+            var randx = rndi(0, 2)
+            var randy = rndi(0, 2)
+            const posX1 = rndi(-10, G.WIDTH + 10)
+            const posY1 = [rndi(-10, -5), rndi(G.HEIGHT + 5, G.HEIGHT + 10)]
+            const posX2 = [rndi(-10, -5), rndi(G.WIDTH + 5, G.WIDTH + 10)]
+            const posY2 = rndi(-10, G.HEIGHT + 10)
+            const spawn = [vec(posX1, posY1[randy]), vec(posX2[randx], posY2)]
+            const real_spawn = spawn[rand]
+            const start = vec(real_spawn.x, real_spawn.y)
+            ammo += 1
+            e.pos = real_spawn
+            e.start = start
+            e.angle = real_spawn.angleTo(player.pos)
+        }
+        return (isCollidingWithFBullets || distX > G.HEIGHT + 30 || distY > G.WIDTH + 30);
+    });
+
+  remove(fBullets, (fb) => {
+    // Interaction from fBullets to enemies, after enemies have been drawn
+    color("yellow");
+    const isCollidingWithEnemies = box(fb.pos, 2).isColliding.char.b;
+    return (isCollidingWithEnemies || fb.pos.y < 0);
+  });
+
+  text(ammo.toString(), 3, 10);
+
+  const playerEnemyCollision = box(player.pos, 2).isColliding.char.b;
+  if (playerEnemyCollision){
+      end()
+  }
 
 }
