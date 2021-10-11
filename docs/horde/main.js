@@ -100,7 +100,11 @@ bbbbbb
 
 const S = {
 	WIDTH: 100,
-	HEIGHT: 100
+	HEIGHT: 100,
+  ENEM_MIN_HEALTH: 1,
+  ENEM_MAX_HEALTH: 60,
+  ENEM_MIN_SPD: 0.2,
+  ENEM_MAX_SPD: 1.5
 };
 
 options = {
@@ -131,8 +135,8 @@ isPlayingBgm: true
 
  /**
   * @typedef {{
-  * pos: Vector
-  * speed: Vector
+  * pos: 0
+  * speed: 0
   * hp: 0
   * }} Enemy
   */
