@@ -17,7 +17,7 @@ yyyyy
  yyyy 
   yy  
  y  y 
-`,//a
+`,//a playerR
 `
 y yyy
  yyyyy
@@ -25,7 +25,7 @@ y yyy
  yyyy
   yy
  y  y
-`,//b
+`,//b playerL
 `
   p
    p
@@ -33,7 +33,7 @@ pppppp
  ppppp
   p
 ppppp
-`,//c
+`,//c flashlightR
 `
    p
   p
@@ -41,7 +41,7 @@ pppppp
 ppppp
    p
  ppppp
-`,//d
+`,//d flashlightL
 `
    pp
   pppp
@@ -49,7 +49,7 @@ ppppp
 pppppp
   pppp
    p p
-`,//e
+`,//e zomboL
 `
  pppp
 pppppp
@@ -57,7 +57,7 @@ pppppp
   p  p
 ppppp
  p p
-`,//f
+`,//f skullL
 `
  pppp
 pppppp
@@ -65,7 +65,7 @@ p ppp
 p  p
  ppppp
   p p
-`,//g
+`,//g skullR
 `
  pp
 pppp
@@ -73,14 +73,14 @@ p p
 pppppp
 pppp
 p p
-`,//h
+`,//h zomboR
 `
 
 wwwwww
 wwwwww
 
 
-`,//i
+`,//i beam
 `
 bbbbbb
  bbbb
@@ -88,14 +88,14 @@ bbbbbb
 bbbbbb
 b b b
 b b b
-`,//j
+`,//j skullTop
 `
  b b b
  b b b
 bbbbbb
 bbbbbb
  bbbb
-`,//k
+`,//k skullBot
 ];
 
 const S = {

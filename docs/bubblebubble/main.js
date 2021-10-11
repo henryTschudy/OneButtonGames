@@ -18,7 +18,7 @@ characters = [
      p
     pp
     pp
-`,//a1(a)
+`,//a Cat a1
 `
 pppp
 pppppp
@@ -26,7 +26,7 @@ pppppp
 pppppp
 pppppp
   pppp
-`,//a2(b)
+`,//b Cat a2
 `
 
 
@@ -34,7 +34,7 @@ p
 pp
 pp
    L
-`,//a3(c)
+`,//c Cat a3
 `
 
   LL p
@@ -42,7 +42,7 @@ pp
 LLLL p
 LLLL p
 LLL pp
-`,//b1(d)
+`,//d Cat b1
 `
 pp
 pp LL
@@ -50,7 +50,7 @@ ppp  p
 pppppp
 pppppp
   pppp
-`,//b2(e)
+`,//e Cat b2
 `
 pp LL
 ppp LL
@@ -58,7 +58,7 @@ ppp LL
 ppp LL
 ppp LL
   pp L
-`,//b3(f)
+`,//f Cat b3
 `
 LLL pp
  LL pp
@@ -66,7 +66,7 @@ LLL pp
      p
     p
      p
-`,//c1(g)
+`,//g Cat c1
 `
   pppp
 pppppp
@@ -74,7 +74,7 @@ p pp p
 pp
 pppppp
   pppp
-`,//c2(h)
+`,//h Cat c2
 `
   pp L
 pppp L
@@ -82,7 +82,7 @@ pppp L
 ppp
 pp p
   p
-`,//c3(i)
+`,//i Cat c3
 `
 
     LL
@@ -90,7 +90,7 @@ pp p
  LLLgg
 LLgggg
 Lggggg
-`,//a1(j)
+`,//j Cauldron a1
 `
  LLLLL
 LLLLLL
@@ -98,7 +98,7 @@ Lggggg
 gggggg
 gggggg
 gggggg
-`,//a2(k)
+`,//k Cauldron a2
 `
 LLLLL
 LLLLLL
@@ -106,7 +106,7 @@ gggggL
 gggggg
 gggggg
 gggggg
-`,//a3(l)
+`,//l Cauldron a3
 `
 
 LLL
@@ -114,7 +114,7 @@ LLLL
 ggLLL
 ggggLL
 gggggL
-`,//a4(m)
+`,//m Cauldron a4
 `
  LLggg
   LLLL
@@ -122,7 +122,7 @@ gggggL
 LLLL
 LLLLLL
 LLLLLL
-`,//b1(n)
+`,//n Cauldron b1
 `
 gggggg
 Lggggg
@@ -130,7 +130,7 @@ LLLLLL
   LLLL
 LL
 LLLLLL
-`,//b2(o)
+`,//o Cauldron b2
 `
 gggggg
 gggggL
@@ -138,7 +138,7 @@ LLLLLL
 LLLL
     LL
 LLLLLL
-`,//b3(p)
+`,//p Cauldron b3
 `
 gggLL
 LLLL
@@ -146,7 +146,7 @@ L   L
  LLLLL
 LLLLLL
 LLLLLL
-`,//b4(q)
+`,//q Cauldron b4
 `
 LLLLLL
 LLLLLL
@@ -154,7 +154,7 @@ LLLLLL
 LLLLLL
  LLLLL
  LLLLL
-`,//c1(r)
+`,//r Cauldron c1
 `
 LLLLLL
 LLLLLL
@@ -162,7 +162,7 @@ LLLLLL
 LLLLLL
 LLLLLL
 LLLLLL
-`,//c2+3(s)
+`,//s Cauldron c2+3
 `
 LLLLLL
 LLLLLL
@@ -170,7 +170,7 @@ LLLLLL
 LLLLLL
 LLLLL
 LLLLL
-`,//c4(t)
+`,//t Cauldron c4
 `
   LLLL
   LLLL
@@ -178,7 +178,7 @@ LLLLL
  LL
 LLL
 LL
-`,//d1(u)
+`,//u Cauldron d1
 `
 LLLLLL
 LLLLLL
@@ -186,7 +186,7 @@ LLLLLL
 LLLLLL
 
      L
-`,//d2(v)
+`,//v Cauldron d2
 `
 LLLLLL
 LLLLLL
@@ -194,7 +194,7 @@ LLLLLL
 LLLLLL
 
 L
-`,//d3(w)
+`,//w Cauldron d3
 `
 LLLL
 LLLL
@@ -202,7 +202,7 @@ LL
    LL
    LLL
     LL
-`,//d4(x)
+`,//x Cauldron d4
 `
      o
     oo
@@ -210,10 +210,13 @@ LL
   oo
  oo
 oo
-`,//spat(y)
-
-
+`,//y Spoon
 ];
+
+const S = {
+	WIDTH: 100,
+	HEIGHT: 100
+};
 
 options = {
   theme: 'dark',
@@ -258,6 +261,35 @@ function update() {
       jump: 0,
     }
   }
+
+  color("black");
+  //cat
+  char("a", S.WIDTH/2-7, S.HEIGHT/2-19);
+  char("b", S.WIDTH/2-1, S.HEIGHT/2-19);
+  char("c", S.WIDTH/2+4, S.HEIGHT/2-19);
+  char("d", S.WIDTH/2-7, S.HEIGHT/2-13);
+  char("e", S.WIDTH/2-1, S.HEIGHT/2-13);
+  char("f", S.WIDTH/2+5, S.HEIGHT/2-13);
+  char("g", S.WIDTH/2-7, S.HEIGHT/2-7);
+  char("h", S.WIDTH/2-1, S.HEIGHT/2-7);
+  char("i", S.WIDTH/2+5, S.HEIGHT/2-7);
+  //cauldron
+  char("j", S.WIDTH/2-9, S.HEIGHT/2);
+  char("k", S.WIDTH/2-3, S.HEIGHT/2);
+  char("l", S.WIDTH/2+3, S.HEIGHT/2);
+  char("m", S.WIDTH/2+9, S.HEIGHT/2);
+  char("n", S.WIDTH/2-9, S.HEIGHT/2+6);
+  char("o", S.WIDTH/2-3, S.HEIGHT/2+6);
+  char("p", S.WIDTH/2+3, S.HEIGHT/2+6);
+  char("q", S.WIDTH/2+9, S.HEIGHT/2+6);
+  char("r", S.WIDTH/2-9, S.HEIGHT/2+12);
+  char("s", S.WIDTH/2-3, S.HEIGHT/2+12);
+  char("s", S.WIDTH/2+3, S.HEIGHT/2+12);
+  char("t", S.WIDTH/2+9, S.HEIGHT/2+12);
+  char("u", S.WIDTH/2-9, S.HEIGHT/2+18);
+  char("v", S.WIDTH/2-3, S.HEIGHT/2+18);
+  char("w", S.WIDTH/2+3, S.HEIGHT/2+18);
+  char("x", S.WIDTH/2+9, S.HEIGHT/2+18);
 
 
 

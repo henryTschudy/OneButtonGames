@@ -9,7 +9,62 @@ and move
 `;
 
 characters = [
+  `
+ oooo
+oooooo
+o oo o
+o oo o
+ oooo
+o    o
+`,//a player
+`
+ cccc
+c cc c
+cc  cc
+cc  cc
+cccccc
+c c c
+`,//b ghost
+`
 
+g gg g
+ g  g
+ g  g
+g gg g
+
+`,//c beamHorz
+`
+ g  g
+  gg
+ g  g
+ g  g
+  gg
+ g  g
+`,//d beamVert
+`
+  g
+  gg
+gg  g
+ g  gg
+  gg
+   g
+`,//e beamDiagTL
+`
+   g
+  gg
+ g  gg
+gg  g
+  gg
+  g
+`,//f beamDiagTR
+`
+ LLLL
+LLLLLL
+LLLLLL
+LLLLLL
+LLLLLL
+LLLLLL
+`,//g gravestone
 ];
 
 const S = {
