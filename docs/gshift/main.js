@@ -6,16 +6,18 @@ Avoid the Ghosts
 [hold] to shoot
 [mouse] to aim 
 and move
+[release] to 
+teleport
 `;
 
 characters = [
   `
- oooo
-oooooo
-o oo o
-o oo o
- oooo
-o    o
+ gggg
+gggggg
+g gg g
+g gg g
+ gggg
+g    g
 `,//a player
 `
  cccc
@@ -65,6 +67,14 @@ LLLLLL
 LLLLLL
 LLLLLL
 `,//g gravestone
+`
+  gg
+  gg
+  gg
+ gggg
+g gg g
+ gggg
+`,//h Teleport
 ];
 
 const G = {
@@ -74,7 +84,9 @@ const G = {
   PLAYER_GUN_OFFSET: 3,
   FBULLET_SPEED: 1.2,
   ENEMY_MIN_BASE_SPEED: 0.5,
-  ENEMY_MAX_BASE_SPEED: 1.0
+  ENEMY_MAX_BASE_SPEED: 1.0,
+  PLAYER_START_BULLET: 0,
+  PLAYER_BULLET_GAIN: 3
 };
 
 options = {
@@ -95,20 +107,27 @@ options = {
   */
 let ghost;
 let player;
-let fBullets = [];
-let enemies = [];
+let fBullets;
+let enemies;
 let currentEnemySpeed = 0;
 let waveCount = 0;
-var ammo = 1;
+let teleport;
 
 function update() {
   if (!ticks) {
     player = {
       pos:vec(G.WIDTH/2,G.HEIGHT/2),
       Shooting: false,
-      ammo: 100,
+      Ammo: G.PLAYER_START_BULLET,
       firingCooldown: G.PLAYER_FIRE_RATE,
     }
+
+    teleport = {
+      pos:vec(G.WIDTH/2,G.HEIGHT/2),
+    }
+
+    fBullets = [];
+    enemies = [];
   }
 
   // Initializing enemies
@@ -116,6 +135,7 @@ function update() {
     currentEnemySpeed =
         rnd(G.ENEMY_MIN_BASE_SPEED, G.ENEMY_MAX_BASE_SPEED) * difficulty;
     let off = rndi(0, 17)
+    player.Ammo += G.PLAYER_BULLET_GAIN;
     for (let i = 0; i < 17; i++) {
         // Kind of useless if statement
         if (i != off){
@@ -140,15 +160,24 @@ function update() {
         }
     }
   }
+
     if (!input.isPressed){
       player.pos = vec(input.pos.x, input.pos.y);
+      player.Shooting = false;
     }
     player.pos.clamp(0, G.WIDTH, 0, G.HEIGHT);
+
+    teleport.pos = vec(input.pos.x, input.pos.y);
+    teleport.pos.clamp(0, G.WIDTH, 0, G.HEIGHT);
+
+    if(input.isPressed){color("green")}
+    else{color("transparent")}
+    char("h",teleport.pos);
 
     // Cooling down for the next shot
     player.firingCooldown--;
     // Time to fire the next shot
-    if (input.isPressed && ammo > 0 && player.firingCooldown <= 0) {
+    if (input.isPressed && player.Ammo > 0 && player.firingCooldown <= 0) {
         // Create the bullet
         fBullets.push({
             pos: vec(player.pos.x + 0.75, player.pos.y),
@@ -156,7 +185,9 @@ function update() {
         });
         // Reset the firing cooldown
         player.firingCooldown = G.PLAYER_FIRE_RATE;
-        //ammo -= 1;
+        player.Ammo -= 1;
+        play("laser");
+        player.Shooting = true;
 
         color("yellow");
         // Generate particles
@@ -171,8 +202,6 @@ function update() {
     }
 
     //Draw player
-    color("black");
-    char("a", player.pos);
 
     // Updating and drawing bullets
     fBullets.forEach((fb) => {
@@ -214,7 +243,8 @@ function update() {
             const spawn = [vec(posX1, posY1[randy]), vec(posX2[randx], posY2)]
             const real_spawn = spawn[rand]
             const start = vec(real_spawn.x, real_spawn.y)
-            ammo += 1
+            player.Ammo += G.PLAYER_BULLET_GAIN;
+            score += 10;
             e.pos = real_spawn
             e.start = start
             e.angle = real_spawn.angleTo(player.pos)
@@ -229,11 +259,19 @@ function update() {
     return (isCollidingWithEnemies || fb.pos.y < 0);
   });
 
-  text(ammo.toString(), 3, 10);
+  text(player.Ammo.toString(), 3, 10);
 
-  const playerEnemyCollision = box(player.pos, 2).isColliding.char.b;
+ 
+  if(player.Shooting){color("yellow")}
+  else {color("blue")}
+  char("a", player.pos);
+
+  color("transparent");
+
+  const playerEnemyCollision = box(player.pos, 4).isColliding.char.b;
   if (playerEnemyCollision){
-      end()
+    play("jump");
+      end();
   }
 
 }

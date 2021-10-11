@@ -168,6 +168,7 @@ let enemyIB;
 let player;
 let scoreSkull;
 let scoreShoot;
+let counter;
 
 function update() {
   if (!ticks) {
@@ -192,6 +193,8 @@ function update() {
       };
     }
     );
+
+    counter = 0;
 
     beamTemp = S.WIDTH/2;
 
@@ -242,6 +245,7 @@ function update() {
     scoreSkull = 0;
     scoreShoot = 0;
   }
+  counter++
 
   stars.forEach((s) => {
     // Choose a color to draw
@@ -267,7 +271,7 @@ grass.forEach((g) => {
 
 
   if(input.isPressed){
-    //if(Time.deltaTime%4==0){play("lucky");}   find deltatime equivalent
+    if(counter%30==0){play("coin");}   
     player.spd = 0;
     color("light_black")
     if(player.faceRight){
