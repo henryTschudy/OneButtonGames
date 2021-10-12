@@ -101,10 +101,11 @@ bbbbbb
 const S = {
 	WIDTH: 100,
 	HEIGHT: 100,
-  ENEM_MIN_HEALTH: 1,
-  ENEM_MAX_HEALTH: 60,
+  ENEM_BASE_HEALTH: 30,
   ENEM_MIN_SPD: 0.2,
-  ENEM_MAX_SPD: 1.5
+  ENEM_MAX_SPD: 0.9,
+  ENEM_MIN_SPAWN: 30,
+  ENEM_MAX_SPAWN: 120
 };
 
 options = {
@@ -169,6 +170,7 @@ let player;
 let scoreSkull;
 let scoreShoot;
 let counter;
+let spawn;
 
 function update() {
   if (!ticks) {
@@ -226,6 +228,10 @@ function update() {
       faceRight: true,
     }
 
+    enemies = [];
+
+    spawn = rndi(S.ENEM_MIN_SPAWN,S.ENEM_MAX_SPAWN);
+
     enemyI1 ={
       pos: 200,
       spd: -0.1
@@ -245,7 +251,8 @@ function update() {
     scoreSkull = 0;
     scoreShoot = 0;
   }
-  counter++
+  counter++;
+  spawn--;
 
   stars.forEach((s) => {
     // Choose a color to draw
@@ -269,9 +276,30 @@ grass.forEach((g) => {
   box(g.pos, 1);
 });
 
+if(spawn == 0){
+  play("hit");
 
-  if(input.isPressed){
-    if(counter%30==0){play("coin");}   
+  const sideCheck = rndi(0,2);
+  const right = Boolean(sideCheck);
+  var side;
+  if (right){side=S.WIDTH+6;}
+  else{side=(-6);}
+
+  var run = rnd(S.ENEM_MIN_SPD,S.ENEM_MAX_SPD);
+  if(right){run *= (-1);}
+
+  const health = S.ENEM_BASE_HEALTH*(1-abs(run));
+
+  enemies.push({
+    pos: side,
+    speed: run,
+    hp: health
+  })
+  spawn = rndi(S.ENEM_MIN_SPAWN,S.ENEM_MAX_SPAWN)
+}
+
+
+  if(input.isPressed){   
     player.spd = 0;
     color("light_black")
     if(player.faceRight){
@@ -282,8 +310,15 @@ grass.forEach((g) => {
         color("yellow");
         char("i", r.pos);
     });
+
+      enemies.forEach((e)=>{
+        if(e.pos>S.WIDTH/2){
+          e.hp--;
+          e.speed *= 0.99;
+        }
+      });
       
-      enemyI1.spd=0.5;
+      enemyI1.spd=1;
     }
     else if(!player.faceRight){
       char("d", player.pos.x-5,player.pos.y)
@@ -293,7 +328,15 @@ grass.forEach((g) => {
         color("yellow");
         char("i", l.pos);
     });
-      enemyI2.spd=-0.5;
+
+    enemies.forEach((e)=>{
+      if(e.pos<S.WIDTH/2){
+        e.hp--;
+        e.speed *= 0.99;
+      }
+    });
+
+      enemyI2.spd=-1;
     }
     
   }
@@ -309,6 +352,25 @@ grass.forEach((g) => {
   color("light_yellow")
   if(player.faceRight){char("a", player.pos)}
   else if (!player.faceRight){char("b", player.pos)}
+
+  enemies.forEach((e)=>{
+    const truSpd = e.speed - player.spd;
+    e.pos += truSpd;
+    color("purple");
+    if(e.pos<S.WIDTH+6&&e.pos>-6){
+      if (e.speed < 0){char("e",e.pos,S.HEIGHT/2);}
+      else{char("h",e.pos,S.HEIGHT/2);}
+    }
+  });
+  remove(enemies, (e) =>{
+      if(e.hp<=0){
+        play("powerUp");
+        color("light_yellow");
+        particle(e.pos,S.HEIGHT/2);
+        scoreShoot +=10;
+      }
+    return (e.hp<=0);
+  });
 
   enemyI1.pos += enemyI1.spd-player.spd;
   enemyI2.pos += enemyI2.spd-player.spd;
@@ -341,12 +403,16 @@ grass.forEach((g) => {
   //set game over to enemy in player area, no hitbox necessary
 
   //score += 0.1;
-  if(scoreSkull<(enemyI1.pos-S.WIDTH/2)){scoreSkull=enemyI1.pos;}
-  if(scoreSkull<abs(enemyI2.pos)-S.WIDTH/2){scoreSkull=abs(enemyI2.pos);}
+  if(scoreSkull*10<(enemyI1.pos-S.WIDTH/2)){scoreSkull=(enemyI1.pos-S.WIDTH/2)/10;}
+  if(scoreSkull*10<abs(enemyI2.pos)-S.WIDTH/2){scoreSkull=(abs(enemyI2.pos)-S.WIDTH/2)/10;}
 
   score = scoreSkull + scoreShoot;
 
-  if(enemyI1.pos<53||enemyI2.pos>47||enemyIT.pos.y>=player.pos.y-2){
+color("transparent");
+  const playerEnemyCollisionL = box(player.pos, 4).isColliding.char.h;
+  const playerEnemyCollisionR = box(player.pos, 4).isColliding.char.e;
+
+  if(enemyI1.pos<53||enemyI2.pos>47||enemyIT.pos.y>=player.pos.y-2||playerEnemyCollisionL||playerEnemyCollisionR){
     play("explosion");
     end();
 }
