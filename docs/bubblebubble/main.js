@@ -1,8 +1,12 @@
 title = "Bubble Bubble";
 
 description = `
-pick up x to
+pick up fire &
 avoid bubbles
+
+get to the cauldron
+
+You have 3 lives
 
 [tap] to change
 directions
@@ -214,8 +218,12 @@ oo
 ];
 
 const S = {
-	WIDTH: 200,
-	HEIGHT: 200
+	WIDTH: 225,
+	HEIGHT: 225,
+  RING_RADIUS_1: 40,
+  RING_RADIUS_2: 60,
+  RING_RADIUS_3: 80,
+  RING_RADIUS_4: 100
 };
 
 options = {
@@ -266,6 +274,14 @@ function update() {
     counter = 0;
     bob = 0;
   }
+
+  color("light_yellow");
+  arc(S.WIDTH/2,S.HEIGHT/2,S.RING_RADIUS_1);
+  arc(S.WIDTH/2,S.HEIGHT/2,S.RING_RADIUS_2);
+  arc(S.WIDTH/2,S.HEIGHT/2,S.RING_RADIUS_3);
+  arc(S.WIDTH/2,S.HEIGHT/2,S.RING_RADIUS_4);
+
+  //cat + animation
   counter++;
 
   if(counter%30 == 0){
@@ -305,3 +321,8 @@ function update() {
 
 
 }
+
+/*function ringLocate(ring, degree){
+
+  return vec(,);
+}*/

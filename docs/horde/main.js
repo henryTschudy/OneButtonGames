@@ -103,7 +103,7 @@ const S = {
 	HEIGHT: 100,
   ENEM_BASE_HEALTH: 30,
   ENEM_MIN_SPD: 0.2,
-  ENEM_MAX_SPD: 1.2,
+  ENEM_MAX_SPD: 0.9,
   ENEM_MIN_SPAWN: 15,
   ENEM_MAX_SPAWN: 90
 };
@@ -330,7 +330,7 @@ if(spawn == 0){
       enemies.forEach((e)=>{
         if(e.pos>S.WIDTH/2){
           e.hp--;
-          e.speed *= 0.99;
+          e.speed *= 0.9;
         }
       });
       
