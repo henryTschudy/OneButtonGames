@@ -33,12 +33,13 @@ options = {
 let bgRings;
 let ring;
 let ringsize;
-let targets = [];
+let targets;
 let currentTargetTime
 
 function update() {
   if (!ticks) {
     bgRings = times(20, () => {
+      targets = [];
 			const posX = rnd(0, GAME.WIDTH);
 			const posY = rnd(0, GAME.HEIGHT);
 			return {
