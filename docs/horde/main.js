@@ -99,18 +99,19 @@ bbbbbb
 ];
 
 const S = {
-	WIDTH: 100,
+	WIDTH: 200,
 	HEIGHT: 100,
   ENEM_BASE_HEALTH: 30,
   ENEM_MIN_SPD: 0.2,
-  ENEM_MAX_SPD: 0.9,
-  ENEM_MIN_SPAWN: 30,
-  ENEM_MAX_SPAWN: 120
+  ENEM_MAX_SPD: 1.2,
+  ENEM_MIN_SPAWN: 15,
+  ENEM_MAX_SPAWN: 90
 };
 
 options = {
 theme: 'dark',
-isPlayingBgm: true
+isPlayingBgm: true,
+viewSize: {x: S.WIDTH, y: S.HEIGHT}
 };
 
 /**
@@ -171,6 +172,8 @@ let scoreSkull;
 let scoreShoot;
 let counter;
 let spawn;
+let multiplier;
+let combo;
 
 function update() {
   if (!ticks) {
@@ -197,10 +200,12 @@ function update() {
     );
 
     counter = 0;
+    combo = 0;
+    multiplier = 1;
 
     beamTemp = S.WIDTH/2;
 
-    beamsR = times(8, ()=> {
+    beamsR = times(16, ()=> {
       const posY = 50;
       const posX = beamTemp+10;
       beamTemp+=6;
@@ -211,7 +216,7 @@ function update() {
 
     beamTemp = S.WIDTH/2;
 
-    beamsL = times(8, ()=> {
+    beamsL = times(16, ()=> {
       const posY = 50;
       const posX = beamTemp-10;
       beamTemp-=6;
@@ -233,7 +238,7 @@ function update() {
     spawn = rndi(S.ENEM_MIN_SPAWN,S.ENEM_MAX_SPAWN);
 
     enemyI1 ={
-      pos: 200,
+      pos: S.WIDTH+100,
       spd: -0.1
     }
     enemyI2 = {
@@ -253,6 +258,12 @@ function update() {
   }
   counter++;
   spawn--;
+  if (combo>0){combo--;}
+  if(combo==0&&multiplier>1){
+    multiplier--;
+    combo = 32-2*multiplier;
+  }
+  console.log(difficulty);
 
   stars.forEach((s) => {
     // Choose a color to draw
@@ -261,8 +272,11 @@ function update() {
     box(s.pos, 1);
 });
 
+color("yellow");
+  text("x"+multiplier.toString(), 3, 10);
+
 color("light_green")
-rect(0,53,100,47)
+rect(0,S.HEIGHT/2+3,S.WIDTH,S.HEIGHT/2-3)
 
 grass.forEach((g) => {
   g.vel = -1*player.spd;
@@ -288,14 +302,16 @@ if(spawn == 0){
   var run = rnd(S.ENEM_MIN_SPD,S.ENEM_MAX_SPD);
   if(right){run *= (-1);}
 
-  const health = S.ENEM_BASE_HEALTH*(1-abs(run));
+  const health = S.ENEM_BASE_HEALTH*(1.3-abs(run));
+  
+  run*=difficulty;
 
   enemies.push({
     pos: side,
     speed: run,
     hp: health
   })
-  spawn = rndi(S.ENEM_MIN_SPAWN,S.ENEM_MAX_SPAWN)
+  spawn = rndi(S.ENEM_MIN_SPAWN/difficulty,S.ENEM_MAX_SPAWN/difficulty)
 }
 
 
@@ -367,7 +383,12 @@ if(spawn == 0){
         play("powerUp");
         color("light_yellow");
         particle(e.pos,S.HEIGHT/2);
-        scoreShoot +=10;
+        const points = 10*multiplier;
+        scoreShoot +=points;
+        multiplier++;
+        combo +=32-2*multiplier;
+        color("yellow");
+        text(points.toString(), e.pos, S.HEIGHT/2-9);
       }
     return (e.hp<=0);
   });
@@ -376,20 +397,25 @@ if(spawn == 0){
   enemyI2.pos += enemyI2.spd-player.spd;
 
   color("purple")
-  if(enemyI1.pos<=106){char("f",enemyI1.pos, S.HEIGHT/2)}
+  if(enemyI1.pos<=S.WIDTH+6){char("f",enemyI1.pos, S.HEIGHT/2)}
   if(enemyI2.pos>=-6){char("g",enemyI2.pos, S.HEIGHT/2)}
 
   if(enemyIT.pos.x > player.pos.x){enemyIT.spd = -0.5;}
   else if(enemyIT.pos.x<player.pos.x){enemyIT.spd = 0.5;}
   else if (enemyIT.pos.y<player.pos.y-3){
     enemyIT.spd = 0;
-    enemyIT.pos.y+=0.2;
-    enemyIB.pos-=0.2;
+    enemyIT.pos.y+=0.2*difficulty;
+    enemyIB.pos-=0.2*difficulty;
   }
   else{
     enemyIT.spd = 0;
     enemyIT.pos = vec(S.WIDTH/2,S.HEIGHT/2-2);
     enemyIB.pos = S.HEIGHT/2+1;
+  }
+
+  if(enemyIT.pos.y>3&&enemyIT.pos.x != player.pos.x){
+    enemyIT.pos.y-=0.02/difficulty;
+    enemyIB.pos+=0.02/difficulty;
   }
 
   enemyIT.pos.x += enemyIT.spd-player.spd;
@@ -412,7 +438,7 @@ color("transparent");
   const playerEnemyCollisionL = box(player.pos, 4).isColliding.char.h;
   const playerEnemyCollisionR = box(player.pos, 4).isColliding.char.e;
 
-  if(enemyI1.pos<53||enemyI2.pos>47||enemyIT.pos.y>=player.pos.y-2||playerEnemyCollisionL||playerEnemyCollisionR){
+  if(enemyI1.pos<S.WIDTH/2+3||enemyI2.pos>S.WIDTH/2-3||enemyIT.pos.y>=player.pos.y-2||playerEnemyCollisionL||playerEnemyCollisionR){
     play("explosion");
     end();
 }

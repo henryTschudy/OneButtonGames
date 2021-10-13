@@ -214,13 +214,14 @@ oo
 ];
 
 const S = {
-	WIDTH: 100,
-	HEIGHT: 100
+	WIDTH: 200,
+	HEIGHT: 200
 };
 
 options = {
   theme: 'dark',
-  isPlayingBgm: true
+  isPlayingBgm: true,
+  viewSize: {x: S.WIDTH, y: S.HEIGHT}
   };
 
    /**
@@ -251,6 +252,8 @@ options = {
   let bubbles;
   let pickups;
   let player;
+  let counter;
+  let bob;
 
 function update() {
   if (!ticks) {
@@ -260,19 +263,27 @@ function update() {
       vel: 0,
       jump: 0,
     }
+    counter = 0;
+    bob = 0;
+  }
+  counter++;
+
+  if(counter%30 == 0){
+    if (bob==1){bob=0;}
+    else{bob=1}
   }
 
   color("black");
   //cat
-  char("a", S.WIDTH/2-7, S.HEIGHT/2-19);
-  char("b", S.WIDTH/2-1, S.HEIGHT/2-19);
-  char("c", S.WIDTH/2+4, S.HEIGHT/2-19);
-  char("d", S.WIDTH/2-7, S.HEIGHT/2-13);
-  char("e", S.WIDTH/2-1, S.HEIGHT/2-13);
-  char("f", S.WIDTH/2+5, S.HEIGHT/2-13);
-  char("g", S.WIDTH/2-7, S.HEIGHT/2-7);
-  char("h", S.WIDTH/2-1, S.HEIGHT/2-7);
-  char("i", S.WIDTH/2+5, S.HEIGHT/2-7);
+  char("a", S.WIDTH/2-7, S.HEIGHT/2-19-bob);
+  char("b", S.WIDTH/2-1, S.HEIGHT/2-19-bob);
+  char("c", S.WIDTH/2+4, S.HEIGHT/2-19-bob);
+  char("d", S.WIDTH/2-7, S.HEIGHT/2-13-bob);
+  char("e", S.WIDTH/2-1, S.HEIGHT/2-13-bob);
+  char("f", S.WIDTH/2+5, S.HEIGHT/2-13-bob);
+  char("g", S.WIDTH/2-7, S.HEIGHT/2-7-bob);
+  char("h", S.WIDTH/2-1, S.HEIGHT/2-7-bob);
+  char("i", S.WIDTH/2+5, S.HEIGHT/2-7-bob);
   //cauldron
   char("j", S.WIDTH/2-9, S.HEIGHT/2);
   char("k", S.WIDTH/2-3, S.HEIGHT/2);
