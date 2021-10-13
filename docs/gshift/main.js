@@ -109,8 +109,8 @@ let ghost;
 let player;
 let fBullets;
 let enemies;
-let currentEnemySpeed = 0;
-let waveCount = 0;
+let currentEnemySpeed;
+let waveCount;
 let teleport;
 
 function update() {
@@ -128,6 +128,8 @@ function update() {
 
     fBullets = [];
     enemies = [];
+    currentEnemySpeed = 0;
+    waveCount = 0;
   }
 
   // Initializing enemies
