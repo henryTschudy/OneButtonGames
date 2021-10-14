@@ -1,8 +1,8 @@
 title = "Bubble Bubble";
 
 description = `
-pick up fire &
-avoid bubbles
+pick up mushrooms &
+avoid green bubbles
 
 get to the cauldron
 
