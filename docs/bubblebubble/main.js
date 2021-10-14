@@ -295,17 +295,19 @@ options = {
   let player;
   let counter;
   let bob;
+  let slow;
 
 function update() {
   if (!ticks) {
     player = {
-      pos:0,
-      ring: 0,
-      vel: 0,
-      jump: 0,
+      pos:3.14,
+      ring: 4,
+      vel: 0.02,
+      clkwise: 1,
     }
     counter = 0;
     bob = 0;
+    slow = 1;
   }
 
   color("light_yellow");
@@ -374,6 +376,31 @@ function update() {
   char("y",50,56);
   char("z",56,56);*/
 
+  if(counter%120==0){
+    if(player.ring==-1){player.ring = 4}
+    else if(player.ring<=1){
+      player.ring=-1;
+      play("coin")
+    }
+    else{player.ring--}
+  }//test
 
+  if(input.isPressed){slow=0.5}
+  if(input.isJustReleased){
+    slow=1;
+    player.clkwise*=(-1)
+  }
+
+  let r = 20*(player.ring+1);
+  let x = r*sin(player.pos%6.28);
+  let y = r*cos(player.pos%6.28);
+  if(player.ring<1){
+    x = 0;
+    y = 0;
+    player.pos=3.14;
+  }
+    char("r",x+S.WIDTH/2,y+S.HEIGHT/2);
+  player.vel = 0.05*player.clkwise*slow/player.ring;
+  player.pos+=player.vel;
 
 }
