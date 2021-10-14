@@ -121,11 +121,11 @@ function update() {
         defence.ticks = 0;
         defence.r = 0;
       }
-    if (coins.length < 15) {
+    while (coins.length < 8) {
             let posX;
             let posY
-            posX = rnd(0, G.WIDTH);
-            posY = rnd(0, G.HEIGHT);
+            posX = rnd(35, G.WIDTH - 35);
+            posY = rnd(35, G.HEIGHT - 35);
             coins.push({
                 pos: vec(posX, posY),
                 attracted: false
@@ -142,8 +142,8 @@ function update() {
         if(e.attracted){
             e.pos = vec(e.pos).addWithAngle(vec(e.pos).angleTo(grabber.pos) + 3.14, 0.5);
         }else{
-            e.pos = vec(e.pos).addWithAngle(vec(e.pos).angleTo(grabber.pos) - 3.14/2, 0.5 * difficulty);
-            e.pos = vec(e.pos).addWithAngle(vec(e.pos).angleTo(grabber.pos), 0.2);
+            e.pos = vec(e.pos).addWithAngle(vec(e.pos).angleTo(grabber.pos) - 3.14/2, 0.5);
+            e.pos = vec(e.pos).addWithAngle(vec(e.pos).angleTo(grabber.pos), 0.4 * difficulty);
         }
         
         if(e.exploded){
