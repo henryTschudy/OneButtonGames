@@ -256,7 +256,11 @@ const S = {
   RING_RADIUS_1: 40,
   RING_RADIUS_2: 60,
   RING_RADIUS_3: 80,
-  RING_RADIUS_4: 100
+  RING_RADIUS_4: 100,
+  SPAWN_RATE_MIN: 30,
+  SPAWN_RATE_MAX: 120,
+  SPAWN_AMOUNT_MIN: 2,
+  SPAWN_AMOUNT_MAX: 5,
 };
 
 options = {
@@ -265,23 +269,11 @@ options = {
   viewSize: {x: S.WIDTH, y: S.HEIGHT}
   };
 
-   /**
-* @typedef {{
-  * pos: 0
-  * ring: 0
-  * vel: 0
-  * jump: 100
-  * }} Bubble
-  */
-  
-  /**
-  * @type  { Bubble [] }
-  */
 
     /**
 * @typedef {{
-  * pos: 0
   * ring: 0
+  * pos: 0
   * vel: 0
   * }} Pickup
   */
@@ -290,17 +282,30 @@ options = {
   * @type  { Pickup [] }
   */
 
+   /**
+* @typedef {{
+  * pos: Vector
+  * vel: Vector
+  * }} Bubble
+  */
+  
+  /**
+  * @type  { Bubble [] }
+  */
+
   let bubbles;
   let pickups;
   let player;
   let counter;
   let bob;
   let slow;
+  let spawn;
 
 function update() {
   if (!ticks) {
     player = {
       pos:3.14,
+      truPos: vec(S.WIDTH/2,S.HEIGHT/2+100),
       ring: 4,
       vel: 0.02,
       clkwise: 1,
@@ -308,6 +313,8 @@ function update() {
     counter = 0;
     bob = 0;
     slow = 1;
+    bubbles = [];
+    spawn = 30;
   }
 
   color("light_yellow");
@@ -318,6 +325,19 @@ function update() {
 
   //cat + animation
   counter++;
+  if(spawn>0){spawn--;}
+  else{
+    let amount = rnd(S.SPAWN_AMOUNT_MIN,S.SPAWN_AMOUNT_MAX)+difficulty/2;
+    for (let i = 0; i < amount; i++) {
+      let x = rnd(-1,1);
+      let y = rnd(-1,1);
+      bubbles.push({
+        pos: vec(S.WIDTH/2,S.HEIGHT/2),
+        vel: vec(x,y),
+      })
+    }
+    spawn=rndi(S.SPAWN_RATE_MIN,S.SPAWN_RATE_MAX)/difficulty;
+  }
 
   /*
   if (combo>0){combo--;}
@@ -392,15 +412,30 @@ function update() {
   }
 
   let r = 20*(player.ring+1);
-  let x = r*sin(player.pos%6.28);
-  let y = r*cos(player.pos%6.28);
+  player.truPos = vec(r*sin(player.pos%6.28)+S.WIDTH/2,r*cos(player.pos%6.28)+S.HEIGHT/2);
   if(player.ring<1){
-    x = 0;
-    y = 0;
+    player.truPos=vec(S.WIDTH/2,S.HEIGHT/2);
     player.pos=3.14;
   }
-    char("r",x+S.WIDTH/2,y+S.HEIGHT/2);
-  player.vel = 0.05*player.clkwise*slow/player.ring;
+    char("r",player.truPos);
+  player.vel = 0.04*player.clkwise*slow*3/(2+player.ring);
   player.pos+=player.vel;
+
+  bubbles.forEach((b)=>{
+    b.pos.x += b.vel.x;
+    b.pos.y += b.vel.y;
+    char("s",b.pos);
+  });
+
+  remove(bubbles,(b)=>{
+    const isCollidePlayer = char("s", b.pos).isColliding.char.r;
+    if(isCollidePlayer&&player.truPos.x!=S.WIDTH/2){
+      play("explosion");
+      color("green");
+      particle(b.pos);
+      //life -1
+    }
+    return(isCollidePlayer||abs(b.pos.x-S.WIDTH/2)>S.WIDTH/2||abs(b.pos.y-S.HEIGHT/2)>S.HEIGHT/2);
+  });
 
 }
