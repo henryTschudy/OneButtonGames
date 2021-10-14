@@ -91,36 +91,36 @@ pp p
 
     LL
   LLLL
- LLLgg
-LLgggg
-Lggggg
+ LLLGG
+LLGGGG
+LGGGGG
 `,//j Cauldron a1
 `
  LLLLL
 LLLLLL
-Lggggg
-gggggg
-gggggg
-gggggg
+LGGGGG
+GGGGGG
+GGGGGG
+GGGGGG
 `,//k Cauldron a2
 `
 LLLLL
 LLLLLL
-gggggL
-gggggg
-gggggg
-gggggg
+GGGGGL
+GGGGGG
+GGGGGG
+GGGGGG
 `,//l Cauldron a3
 `
 
 LLL
 LLLL
-ggLLL
-ggggLL
-gggggL
+GGLLL
+GGGGLL
+GGGGGL
 `,//m Cauldron a4
 `
- LLggg
+ LLGGG
   LLLL
  L  LL
 LLLL
@@ -128,23 +128,23 @@ LLLLLL
 LLLLLL
 `,//n Cauldron b1
 `
-gggggg
-Lggggg
+GGGGGG
+LGGGGG
 LLLLLL
   LLLL
 LL
 LLLLLL
 `,//o Cauldron b2
 `
-gggggg
-gggggL
+GGGGGG
+GGGGGL
 LLLLLL
 LLLL
     LL
 LLLLLL
 `,//p Cauldron b3
 `
-gggLL
+GGGLL
 LLLL
 L   L
  LLLLL
@@ -283,6 +283,19 @@ function update() {
 
   //cat + animation
   counter++;
+
+  /*
+  if (combo>0){combo--;}
+  if(combo==0&&multiplier>1){
+    multiplier--;
+    combo = 32-2*multiplier;
+  }
+
+  const points = 10*multiplier;
+        scoreShoot +=points;
+        multiplier++;
+        combo +=32-2*multiplier;
+  */
 
   if(counter%30 == 0){
     if (bob==1){bob=0;}
