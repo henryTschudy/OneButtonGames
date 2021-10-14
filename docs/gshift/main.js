@@ -68,12 +68,12 @@ LLLLLL
 LLLLLL
 `,//g gravestone
 `
-  gg
-  gg
-  gg
- gggg
-g gg g
- gggg
+ g  g
+gg  gg
+
+
+gg  gg
+ g  g
 `,//h Teleport
 ];
 
@@ -112,7 +112,7 @@ let enemies;
 let currentEnemySpeed;
 let waveCount;
 let teleport;
-
+let graves;
 function update() {
   if (!ticks) {
     player = {
@@ -125,6 +125,14 @@ function update() {
     teleport = {
       pos:vec(G.WIDTH/2,G.HEIGHT/2),
     }
+
+    graves = times(10, () => {
+      const posX = rnd(0, G.WIDTH);
+      const posY = rnd(0, G.HEIGHT);
+      return {
+          pos: vec(posX, posY),
+      };
+  });
 
     fBullets = [];
     enemies = [];
@@ -163,6 +171,10 @@ function update() {
     }
   }
 
+  graves.forEach((e) => {
+    color("light_black");
+    char("g",e.pos);
+})
     if (!input.isPressed){
       player.pos = vec(input.pos.x, input.pos.y);
       player.Shooting = false;
