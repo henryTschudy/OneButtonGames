@@ -152,29 +152,29 @@ LLLLLL
 LLLLLL
 `,//q Cauldron b4
 `
-LLLLLL
-LLLLLL
-LLLLLL
-LLLLLL
- LLLLL
- LLLLL
-`,//r Cauldron c1
+  Y
+  Yr
+Y  r Y
+rYryrr
+rryyrY
+ Yrrr
+`,//r player fire
 `
-LLLLLL
-LLLLLL
-LLLLLL
-LLLLLL
-LLLLLL
-LLLLLL
-`,//s Cauldron c2+3
+ GGGG
+GggggG
+G g gG
+Gggg G
+Gg g G
+ GGGG
+`,//s Bubble obstacle
 `
-LLLLLL
-LLLLLL
-LLLLLL
-LLLLLL
-LLLLL
-LLLLL
-`,//t Cauldron c4
+ ryr
+  rry
+  yrrr
+  yyry
+ yy  r
+yy
+`,//t ingredients (mushroom)
 `
   LLLL
   LLLL
@@ -215,6 +215,39 @@ LL
  oo
 oo
 `,//y Spoon
+`
+ LLLL
+LggggL
+ LLLL
+LLLLLL
+LLLLLL
+ LLLL
+`,//z +1 life
+`
+ LLLrr
+LLLrr
+LLrrL
+LrrL L
+rrL  L
+rLL L
+`,//unused -1 life
+`
+ R RR
+RR RRR
+RRyy
+  yyRR
+RRR RR
+ RR R
+`,//unused ingredients (flower)
+`
+   YY
+  yrYY
+ yyyrY
+ yry
+ry
+y
+`,//unused ingredients (pizza)
+
 ];
 
 const S = {
@@ -322,20 +355,25 @@ function update() {
   char("o", S.WIDTH/2-3, S.HEIGHT/2+6);
   char("p", S.WIDTH/2+3, S.HEIGHT/2+6);
   char("q", S.WIDTH/2+9, S.HEIGHT/2+6);
-  char("r", S.WIDTH/2-9, S.HEIGHT/2+12);
-  char("s", S.WIDTH/2-3, S.HEIGHT/2+12);
-  char("s", S.WIDTH/2+3, S.HEIGHT/2+12);
-  char("t", S.WIDTH/2+9, S.HEIGHT/2+12);
+  //char("r", S.WIDTH/2-9, S.HEIGHT/2+12);
+  //char("s", S.WIDTH/2-3, S.HEIGHT/2+12);
+  //char("s", S.WIDTH/2+3, S.HEIGHT/2+12);
+  //char("t", S.WIDTH/2+9, S.HEIGHT/2+12);
+  color("light_black")
+  rect(S.WIDTH/2-12, S.HEIGHT/2+9, 24,6)
+  color("black")
   char("u", S.WIDTH/2-9, S.HEIGHT/2+18);
   char("v", S.WIDTH/2-3, S.HEIGHT/2+18);
   char("w", S.WIDTH/2+3, S.HEIGHT/2+18);
   char("x", S.WIDTH/2+9, S.HEIGHT/2+18);
+  //test
+
+  /*char("r",50,50);
+  char("s",56,50);
+  char("t",62,50);
+  char("y",50,56);
+  char("z",56,56);*/
 
 
 
 }
-
-/*function ringLocate(ring, degree){
-
-  return vec(,);
-}*/
