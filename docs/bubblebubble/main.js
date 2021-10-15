@@ -305,6 +305,7 @@ options = {
   let multiplier;
   let noMoreBubbles;
   let spawnPickups;
+  let life;
 
 function update() {
   if (!ticks) {
@@ -324,6 +325,7 @@ function update() {
     multiplier = 1;
     noMoreBubbles = false;
     spawnPickups = true;
+    life = 3;
   }
 
   color("light_yellow");
@@ -350,7 +352,6 @@ function update() {
   if(spawnPickups){
     for(let i=0; i<4; i++){
       let pickupsInRing = rndi(S.MIN_PICKUPS, S.MAX_PICKUPS);
-      console.log(pickupsInRing);
       pickups[i] = [];
       for(let j=0; j<pickupsInRing; j++){
         let r = 20*(i+2);
@@ -412,6 +413,10 @@ function update() {
   char("v", S.WIDTH/2-3, S.HEIGHT/2+18);
   char("w", S.WIDTH/2+3, S.HEIGHT/2+18);
   char("x", S.WIDTH/2+9, S.HEIGHT/2+18);
+  text("LIFE", 5, 10);
+  if(life > 0){char("z", 5, 20);}
+  if(life > 1){char("z", 5, 30);}
+  if(life > 2){char("z", 5, 40);}
   //test
 
   /*char("r",50,50);
@@ -464,10 +469,17 @@ function update() {
       play("explosion");
       color("green");
       particle(b.pos);
-      //life -1
-      // if(life == 0){
-      //  end()
-      //}
+      color("black");
+      life -= 1;
+      if(life == 2){
+        particle(5, 40);
+      } else if(life == 1){
+        particle(5, 30)
+      } else if (life == 0){
+        particle(5, 20);
+      } else {
+        end();
+      }
     }
     return(noMoreBubbles||isCollidePlayer||abs(b.pos.x-S.WIDTH/2)>S.WIDTH/2||abs(b.pos.y-S.HEIGHT/2)>S.HEIGHT/2);
   });
@@ -479,10 +491,10 @@ function update() {
         play("coin");
         color("yellow");
         particle(p.truPos);
+        color("black");
         addScore(10);
       }
       return(isCollidePlayer);
     })
   }
-
 }
