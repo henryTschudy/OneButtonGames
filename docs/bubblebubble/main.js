@@ -263,6 +263,8 @@ const S = {
   SPAWN_AMOUNT_MAX: 5,
   MAX_PICKUPS: 10,
   MIN_PICKUPS: 4,
+  COMBO_DRAIN_RATE: 0.01,
+  COMBO_GAIN: 1,
 };
 
 options = {
@@ -364,18 +366,7 @@ function update() {
     spawnPickups = false;
   }
 
-  /*
-  if (combo>0){combo--;}
-  if(combo==0&&multiplier>1){
-    multiplier--;
-    combo = 32-2*multiplier;
-  }
-
-  const points = 10*multiplier;
-        scoreShoot +=points;
-        multiplier++;
-        combo +=32-2*multiplier;
-  */
+  if (multiplier>1){multiplier -= (S.COMBO_DRAIN_RATE*(multiplier/2));}
 
   if(counter%30 == 0){
     if (bob==1){bob=0;}
@@ -414,6 +405,7 @@ function update() {
   char("w", S.WIDTH/2+3, S.HEIGHT/2+18);
   char("x", S.WIDTH/2+9, S.HEIGHT/2+18);
   text("LIFE", 5, 10);
+  text(`X ${round(multiplier)}`, S.WIDTH-30, 10)
   if(life > 0){char("z", 5, 20);}
   if(life > 1){char("z", 5, 30);}
   if(life > 2){char("z", 5, 40);}
@@ -492,7 +484,8 @@ function update() {
         color("yellow");
         particle(p.truPos);
         color("black");
-        addScore(10);
+        multiplier += S.COMBO_GAIN;
+        addScore(10 * multiplier);
       }
       return(isCollidePlayer);
     })
