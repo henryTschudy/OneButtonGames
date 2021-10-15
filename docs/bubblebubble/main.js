@@ -268,8 +268,7 @@ const S = {
 options = {
   theme: 'dark',
   isPlayingBgm: true,
-  viewSize: {x: S.WIDTH, y: S.HEIGHT},
-  isCapturing: true
+  viewSize: {x: S.WIDTH, y: S.HEIGHT}
   };
 
 
@@ -305,6 +304,7 @@ options = {
   let spawn;
   let multiplier;
   let noMoreBubbles;
+  let spawnPickups;
 
 function update() {
   if (!ticks) {
@@ -323,6 +323,7 @@ function update() {
     spawn = 30;
     multiplier = 1;
     noMoreBubbles = false;
+    spawnPickups = true;
   }
 
   color("light_yellow");
@@ -346,17 +347,20 @@ function update() {
     }
     spawn=rndi(S.SPAWN_RATE_MIN,S.SPAWN_RATE_MAX)/difficulty;
   }
-  for(let i=0; i<3;i++){
-    let pickupsInRing = rndi(S.MIN_PICKUPS, S.MAX_PICKUPS);
-    pickups[i] = [];
-    if(pickups[i].length < pickupsInRing){
-      let r = 20*(i+1);
-      let pos = rnd(3.14,12.56);
-      pickups[i].push({
-        truPos: vec(r*sin(pos%6.28)+S.WIDTH/2,r*cos(pos%6.28)+S.HEIGHT/2),
-        ring: i
-      });
+  if(spawnPickups){
+    for(let i=0; i<4; i++){
+      let pickupsInRing = rndi(S.MIN_PICKUPS, S.MAX_PICKUPS);
+      console.log(pickupsInRing);
+      pickups[i] = [];
+      for(let j=0; j<pickupsInRing; j++){
+        let r = 20*(i+2);
+        let pos = rnd(3.14,12.56);
+        pickups[i].push({
+          truPos: vec(r*sin(pos%6.28)+S.WIDTH/2,r*cos(pos%6.28)+S.HEIGHT/2),
+        });
+      }
     }
+    spawnPickups = false;
   }
 
   /*
@@ -415,14 +419,20 @@ function update() {
   char("t",62,50);
   char("y",50,56);
   char("z",56,56);*/
-
-  if(counter%120==0){
-    if(player.ring==-1){player.ring = 4}
+  if(player.ring ==-1 || pickups[player.ring-1].length == 0){
+    if(player.ring==-1){
+      player.ring = 4;
+      play("powerUp");
+      spawnPickups = true;
+    }
     else if(player.ring<=1){
       player.ring=-1;
       play("coin")
     }
-    else{player.ring--}
+    else{
+      player.ring--;
+      play("powerUp");
+    }
   }//test
 
   if(input.isPressed){slow=0.5}
