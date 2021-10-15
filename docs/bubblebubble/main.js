@@ -261,12 +261,15 @@ const S = {
   SPAWN_RATE_MAX: 120,
   SPAWN_AMOUNT_MIN: 2,
   SPAWN_AMOUNT_MAX: 5,
+  MAX_PICKUPS: 10,
+  MIN_PICKUPS: 4,
 };
 
 options = {
   theme: 'dark',
   isPlayingBgm: true,
-  viewSize: {x: S.WIDTH, y: S.HEIGHT}
+  viewSize: {x: S.WIDTH, y: S.HEIGHT},
+  isCapturing: true
   };
 
 
@@ -300,6 +303,8 @@ options = {
   let bob;
   let slow;
   let spawn;
+  let multiplier;
+  let noMoreBubbles;
 
 function update() {
   if (!ticks) {
@@ -314,7 +319,10 @@ function update() {
     bob = 0;
     slow = 1;
     bubbles = [];
+    pickups = [];
     spawn = 30;
+    multiplier = 1;
+    noMoreBubbles = false;
   }
 
   color("light_yellow");
@@ -337,6 +345,18 @@ function update() {
       })
     }
     spawn=rndi(S.SPAWN_RATE_MIN,S.SPAWN_RATE_MAX)/difficulty;
+  }
+  for(let i=0; i<3;i++){
+    let pickupsInRing = rndi(S.MIN_PICKUPS, S.MAX_PICKUPS);
+    pickups[i] = [];
+    if(pickups[i].length < pickupsInRing){
+      let r = 20*(i+1);
+      let pos = rnd(3.14,12.56);
+      pickups[i].push({
+        truPos: vec(r*sin(pos%6.28)+S.WIDTH/2,r*cos(pos%6.28)+S.HEIGHT/2),
+        ring: i
+      });
+    }
   }
 
   /*
@@ -417,7 +437,8 @@ function update() {
     player.truPos=vec(S.WIDTH/2,S.HEIGHT/2);
     player.pos=3.14;
   }
-    char("r",player.truPos);
+
+  char("r",player.truPos);
   player.vel = 0.04*player.clkwise*slow*3/(2+player.ring);
   player.pos+=player.vel;
 
@@ -434,8 +455,24 @@ function update() {
       color("green");
       particle(b.pos);
       //life -1
+      // if(life == 0){
+      //  end()
+      //}
     }
-    return(isCollidePlayer||abs(b.pos.x-S.WIDTH/2)>S.WIDTH/2||abs(b.pos.y-S.HEIGHT/2)>S.HEIGHT/2);
+    return(noMoreBubbles||isCollidePlayer||abs(b.pos.x-S.WIDTH/2)>S.WIDTH/2||abs(b.pos.y-S.HEIGHT/2)>S.HEIGHT/2);
   });
+
+  for(let i=0; i<pickups.length; i++){
+    remove(pickups[i], (p)=>{
+      const isCollidePlayer = char("t", p.truPos).isColliding.char.r;
+      if(isCollidePlayer&&player.truPos.x!=S.WIDTH/2){
+        play("coin");
+        color("yellow");
+        particle(p.truPos);
+        addScore(10);
+      }
+      return(isCollidePlayer);
+    })
+  }
 
 }
