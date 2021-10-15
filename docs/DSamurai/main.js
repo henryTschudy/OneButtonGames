@@ -122,7 +122,7 @@ function update() {
     }
 
     // Terrain (Ground)
-    color("black");
+    color("green");
     rect(0, GAME.Y_OFFSET + 3, GAME.WIDTH, GAME.Y_OFFSET);
     // Terrain (Upper Level)
     color("yellow");
@@ -148,7 +148,6 @@ function update() {
         });
         nextEnemyTicks = rnd(120, 150) / sqrt(difficulty);
     }
-    text(enemy.length.toString(), 15, 10);
 
     // Push Range Enemy Into the Field
     if (rangeEnemy.length === 0) {
@@ -179,8 +178,6 @@ function update() {
         });
         nextRangeEnemyTicks = rnd(150, 200) / sqrt(difficulty);
     }
-    color("yellow");
-    text(rangeEnemy.length.toString(), 30, 10);
 
     // Player is dflecting or not
     if (input.isPressed) {
@@ -196,11 +193,10 @@ function update() {
         (player.pos.x < 0 && player.vx < 0) ||
         (player.pos.x > 99 && player.vx > 0)
     ) {
-        // play("laser");
         player.vx *= -1;
     }
     if (!Deflecting) {
-        player.pos.x += (player.vx * sqrt(difficulty)) / GAME.PLAYER_SPEED;
+        player.pos.x += (player.vx) / GAME.PLAYER_SPEED;
     } else {
         player.pos.x += 0;
     }
@@ -245,8 +241,8 @@ function update() {
     // Enemy Conditions
     remove(enemy, (e) => {
         e.x += (e.vx * sqrt(difficulty)) / 2;
-        color('red');
 
+        color('red');
         if (char(addWithCharCode("c", floor(ticks / 10) % 2), e.x, GAME.Y_OFFSET).isColliding.char.e) {
             addScore(10 * difficulty, vec(e.x, GAME.Y_OFFSET));
             // addScore(multiplier, t.pos);
@@ -255,7 +251,6 @@ function update() {
             return (true);
         }
     });
-
     color("light_red");
     if (explosions.length === 0) {
         multiplier = 1;
@@ -307,7 +302,7 @@ function update() {
 
 
     // Draw player in the scene, give it animation and set collider for end condition
-    color("black");
+    color("cyan");
     const isCollidingToPlayer = char(addWithCharCode("a", floor(ticks / 10) % 2), player.pos.x, player.pos.y, {
         mirror: { x: player.vx > 0 ? 1 : -1 },
     }).isColliding
@@ -344,6 +339,7 @@ function update() {
         return !b.pos.isInRect(-3, -3, 106, 106);
     });
 
+    // End condition when player is collide with bullets
     if (isCollidingToPlayer.char.c || isCollidingToPlayer.char.d) {
         play("lucky");
         end();
