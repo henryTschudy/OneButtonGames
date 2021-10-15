@@ -261,10 +261,10 @@ const S = {
   SPAWN_RATE_MAX: 120,
   SPAWN_AMOUNT_MIN: 2,
   SPAWN_AMOUNT_MAX: 5,
-  MAX_PICKUPS: 10,
   MIN_PICKUPS: 4,
+  MAX_PICKUPS: 10,
   COMBO_DRAIN_RATE: 0.01,
-  COMBO_GAIN: 1,
+  COMBO_GAIN_RATE: 1,
 };
 
 options = {
@@ -409,7 +409,6 @@ function update() {
   if(life > 0){char("z", 5, 20);}
   if(life > 1){char("z", 5, 30);}
   if(life > 2){char("z", 5, 40);}
-  //test
 
   /*char("r",50,50);
   char("s",56,50);
@@ -430,7 +429,7 @@ function update() {
       player.ring--;
       play("powerUp");
     }
-  }//test
+  }
 
   if(input.isPressed){slow=0.5}
   if(input.isJustReleased){
@@ -484,7 +483,7 @@ function update() {
         color("yellow");
         particle(p.truPos);
         color("black");
-        multiplier += S.COMBO_GAIN;
+        multiplier += S.COMBO_GAIN_RATE;
         addScore(10 * multiplier);
       }
       return(isCollidePlayer);
