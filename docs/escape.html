@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>crisp-game-lib</title>
+    <meta
+      name="viewport"
+      content="width=device-width, height=device-height,
+    user-scalable=no, initial-scale=1, maximum-scale=1"
+    />
+    <script src="https://unpkg.com/sounds-some-sounds@1.0.5/build/index.js"></script>
+    <script src="https://unpkg.com/gif-capture-canvas@1.1.0/build/index.js"></script>
+    <script src="https://unpkg.com/terser@4.6.11/dist/bundle.min.js"></script>
+    <script src="https://unpkg.com/pixi.js@5.3.0/dist/pixi.min.js"></script>
+    <script src="https://unpkg.com/pixi-filters@3.1.1/dist/pixi-filters.js"></script>
+    <script>
+      var module = {};
+    </script>
+    <script src="https://unpkg.com/lodash.clonedeep@4.5.0/index.js"></script>
+    <script src="https://abagames.github.io/crisp-game-lib/bundle.js"></script>
+
+<script>
+// The title of the game to be displayed on the title screen
+title  =  "First Game";
+
+// The description, which is also displayed on the title screen
+description  =  `TBD
+`;
+
+// The array of custom sprites
+characters = [
+`
+ ppp
+lpppl
+ ppp
+ ppp
+lpppl
+ ppp
+`, `
+ bbb
+lbbbl
+ bbb
+ bbb
+lbbbl
+ bbb
+ `
+];
+
+const G = {
+    WIDTH: 100,
+    HEIGHT: 150,
+    STAR_SPEED_MIN: 0.5,
+    STAR_SPEED_MAX: 1.0,
+    PLAYER_FIRE_RATE: 10,
+    PLAYER_GUN_OFFSET: 3,
+    FBULLET_SPEED: 1,
+    ENEMY_MIN_BASE_SPEED: 1.0,
+    ENEMY_MAX_BASE_SPEED: 2.0
+};
+// Game runtime options
+// Refer to the official documentation for all available options
+options  = {
+    viewSize: {x: G.WIDTH, y: G.HEIGHT},
+    isReplayEnabled: true
+};
+
+/**
+* @typedef {{
+* pos: Vector,
+* speed: number
+* }} Star
+*/
+
+/**
+* @type  { Star [] }
+*/
+let stars = [];
+/**
+ * @typedef {{
+ * pos: Vector,
+ * }} Player
+ */
+
+/**
+ * @type { Player }
+ */
+let player;
+
+let fBullets = [];
+
+var ammo = 1;
+
+let enemies = [];
+let currentEnemySpeed = 0;
+let waveCount = 0;
+
+// The game loop function
+function  update() {
+	// The init function
+	if (!ticks) {
+        // Randomly generates 20 stars across the screen
+        for (let i = 0; i < 10; i++) {
+            stars.push({
+                pos: vec(rnd(0, G.WIDTH), rnd(-40, G.HEIGHT - 40)),    // Position of star
+                speed: rnd(0.5, 1.0),                                       // Speed of star
+                start: vec(0, 0)
+            });
+            
+        }
+        player = {
+            pos: vec(G.WIDTH * 0.5, G.HEIGHT * 0.5),
+            firingCooldown: G.PLAYER_FIRE_RATE,
+            isFiringLeft: true
+        };
+        fBullets = [];
+	}
+    if (enemies.length === 0) {
+        currentEnemySpeed =
+            rnd(G.ENEMY_MIN_BASE_SPEED, G.ENEMY_MAX_BASE_SPEED) * difficulty;
+        off = rndi(0, 17)
+        for (let i = 0; i < 17; i++) {
+            if (i != off){
+                // Spawn Logic
+                // vector that contains two points
+                //  randomly select two points
+                /*
+                var rand = rndi(0, 2)
+                var randx = rndi(0, 2)
+                var randy = rndi(0, 2)
+                const posX1 = rndi(-10, G.WIDTH + 10)
+                const posY1 = [rndi(-10, -5), rndi(G.HEIGHT + 5, G.HEIGHT + 10)]
+                const posX2 = [rndi(-10, -5), rndi(G.WIDTH + 5, G.WIDTH + 10)]
+                const posY2 = rndi(-10, G.HEIGHT + 10)
+                const spawn = [vec(posX1, posY1[randy]), vec(posX2[randx], posY2)]
+                const real_spawn = spawn[rand]
+                const start = vec(real_spawn.x, real_spawn.y)
+                */
+                x = 4 * i
+                y = -5
+                enemies.push({ 
+                    pos: vec(x, y),
+                    //angle: real_spawn.angleTo(player.pos),
+                    //start: start
+                })
+            }
+        }
+    }
+
+    player.pos = vec(input.pos.x, input.pos.y);
+    player.pos.clamp(0, G.WIDTH, 0, G.HEIGHT);
+
+    // Cooling down for the next shot
+    player.firingCooldown--;
+    // Time to fire the next shot
+    if (input.isPressed && ammo > 0 && player.firingCooldown <= 0) {
+        // Create the bullet
+        fBullets.push({
+            pos: vec(player.pos.x + 0.75, player.pos.y)
+        });
+        // Reset the firing cooldown
+        player.firingCooldown = G.PLAYER_FIRE_RATE;
+
+        color("yellow");
+        // Generate particles
+        particle(
+            player.pos.x + 0.75, // x coordinate
+            player.pos.y, // y coordinate
+            4, // The number of particles
+            1, // The speed of the particles
+            -PI/2, // The emitting angle
+            PI/4  // The emitting width
+        );
+    }
+
+    //Draw player
+    color("black");
+    char("a", player.pos);
+
+    // Updating and drawing bullets
+    fBullets.forEach((fb) => {
+        // Move the bullets upwards
+        fb.pos.y -= G.FBULLET_SPEED;
+        
+        // Drawing
+        color("yellow");
+        box(fb.pos, 2);
+    });
+    remove(enemies, (e) => {
+        e.pos.y += currentEnemySpeed 
+        color("black");
+        // Shorthand to check for collision against another specific type
+        // Also draw the sprite
+        const isCollidingWithFBullets = char("b", e.pos).isColliding.rect.yellow;
+
+        // Check whether to make a small particle explosin at the position
+        if (isCollidingWithFBullets) {
+            color("yellow");
+            particle(e.pos);
+        }
+
+        // Also another condition to remove the object
+        /*
+        if (isCollidingWithFBullets || e.pos.y > G.HEIGHT){
+            var rand = rndi(0, 2)
+            var randx = rndi(0, 2)
+            var randy = rndi(0, 2)
+            const posX1 = rndi(-10, G.WIDTH + 10)
+            const posY1 = [rndi(-10, -5), rndi(G.HEIGHT + 5, G.HEIGHT + 10)]
+            const posX2 = [rndi(-10, -5), rndi(G.WIDTH + 5, G.WIDTH + 10)]
+            const posY2 = rndi(-10, G.HEIGHT + 10)
+            const spawn = [vec(posX1, posY1[randy]), vec(posX2[randx], posY2)]
+            const real_spawn = spawn[rand]
+            const start = vec(real_spawn.x, real_spawn.y)
+            ammo += 1
+            e.pos = real_spawn
+            e.start = start
+            e.angle = real_spawn.angleTo(player.pos)
+        }*/
+        return (isCollidingWithFBullets || distX > G.HEIGHT + 30 || distY > G.WIDTH + 30);
+    });
+    remove(fBullets, (fb) => {
+        // Interaction from fBullets to enemies, after enemies have been drawn
+        color("yellow");
+        const isCollidingWithEnemies = box(fb.pos, 2).isColliding.char.b;
+        return (isCollidingWithEnemies || fb.pos.y < 0);
+    });
+
+    text(ammo.toString(), 3, 10);
+
+    // Draw the stars
+    stars.forEach((s) =>{
+        // Move the star downwards
+        s.pos.y += s.speed * 1.5;
+        s.pos.x -= s.speed / 10;
+        
+        // Bring star back to top once it's past the bottom
+        if (s.pos.y > s.start.y + 40 || s.pos.y > G.HEIGHT){
+            color("light_black");
+            // Generate particles
+            particle(
+                s.pos.x,         // x coordinate
+                s.pos.y, // y coordinate
+                4, // The number of particles
+                1, // The speed of the particles
+                -3*PI/4,  // The emitting angle
+                PI/8        // emitting width
+            );
+            s.pos = vec(rnd(0, G.WIDTH), rnd(-40, G.HEIGHT - 40));
+            s.speed = rnd(0.5, 1.0);
+            s.start = vec(s.pos.x, s.pos.y)
+        }
+
+        // Colors
+        color("light_black");
+        box(s.pos, 1)
+    })
+
+    const playerEnemyCollision = box(player.pos, 2).isColliding.char.b;
+    if (playerEnemyCollision){
+        end()
+    }
+}  
+
+addEventListener("load", onLoad);
+</script>
+
+  </head>
+  <body style="background: #ddd"></body>
+</html>
