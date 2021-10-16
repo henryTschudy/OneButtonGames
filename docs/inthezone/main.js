@@ -36,7 +36,9 @@ const G = {
 
 options = {
   theme: 'dark',
-	viewSize: {x: G.WIDTH, y: G.HEIGHT}
+	viewSize: {x: G.WIDTH, y: G.HEIGHT},
+  isPlayingBgm: true,
+  seed: 9
 };
 
 /**
@@ -45,10 +47,7 @@ options = {
  * ticks: number, prevLine: any, isActive: boolean
  * }[]}
  */
-let lines;
-let activeTicks;
-/** @type {{pos: Vector, vel: Vector}[]} */
-let stars;
+
 /** @type {{x: number, vx: number}} */
 let player;
 let multiplier;
@@ -57,9 +56,6 @@ let meter;
 
 function update() {
   if (!ticks) {
-    lines = [];
-    activeTicks = -1;
-    stars = [];
     player = { x: 40, vx: 0.5 };
     multiplier = 1;
     position = 40;
