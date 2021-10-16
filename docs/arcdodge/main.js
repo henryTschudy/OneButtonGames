@@ -66,6 +66,9 @@ function update() {
 
 }
 
+//update score
+addScore(0.05);
+
 //spawn random rings ///////////////
 ringticks += (difficulty * 0.8);
 
