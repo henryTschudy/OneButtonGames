@@ -2,7 +2,7 @@ title = "HI-FLY";
 
 description = ` [TAP] Flap
 [MOUSE] Direction
-[Hold] TBA
+ [Hold] TBA
 `;
 
 characters = [
@@ -15,10 +15,17 @@ b b
 `,
 ];
 
+const G = {
+  WIDTH: 100,
+  HEIGHT: 150,
+  ROCK_SPEED_MIN: 0.3,
+  ROCK_SPEED_MAX: 1.0
+}
+
 options = {
   isPlayingBgm: true,
   isReplayEnabled: true,
-  seed: 1,
+  seed: 4,
 };
 
 /**
@@ -28,8 +35,22 @@ options = {
  * }}
  */
 let ship;
+
+/**
+ * @typedef {{
+ * pos: Vector,
+ * speed: number
+ * }} Rock
+ */
+
+/**
+ * @type { Rock [] }
+ */
+let rocks;
+
 /** @type {{pos:Vector, width: number}[]} */
 let decks;
+
 
 function update() {
   if (!ticks) {
@@ -41,25 +62,23 @@ function update() {
       nextUp: -3,
       nextDown: 3,
     };
-    
-    /*
-    decks = [
-      {
-        pos: vec(30, 50),
-        width: 40,
-      },
-      {
-        pos: vec(50, 75),
-        width: 35,
-      },
-      {
-        pos: vec(70, 99),
-        width: 30,
-      },
-    ];
-    */
   
-  }
+    rocks = times(10, () => {
+      const posX = rnd(0, G.WIDTH);
+      const posY = rnd(0, G.HEIGHT);
+      return {
+          pos: vec(posX, posY),
+          speed: rnd(G.ROCK_SPEED_MIN, G.ROCK_SPEED_MAX)}
+  });
+}
+
+  //Rocks updates
+  rocks.forEach((r) => {
+    r.pos.y += r.speed;
+    if (r.pos.y > G.HEIGHT) r.pos.y = 0;
+    color("light_black");
+    box(r.pos, 5);
+});
 
   //horizontal movement
   ship.pos.x = (input.pos.x);
@@ -67,22 +86,18 @@ function update() {
 	ship.pos.clamp(0, 100, 0, 150);
 
   //vertical movement
-  ship.vel.y += input.isJustPressed ? ship.up * 2 : ship.down * 0.02;
+  ship.vel.y += input.isJustPressed ? ship.up * 2.3 : ship.down * 0.04;
   if (input.isJustPressed) {
-    play("coin");
+    play("jump");
+    if (ship.down > 0.5)
+      ship.down = ship.down - 0.4;
   }
   if (input.isJustReleased) {
     //play("laser");
   }
   ship.pos.y += ship.vel.y;
+  ship.down = ship.down + 0.006;
   
-  /*
-  color(ship.vel.y > 1 ? "red" : ship.vel.y > 0.6 ? "yellow" : "blue");
-  rect(1, 20, 3, ship.vel.y * 20);
-  color("red");
-  rect(0, 40, 5, 1);
-  */
-
   let scrY = 0;
   if (ship.pos.y > 19) {
     scrY = (19 - ship.pos.y) * 0.2;
@@ -91,42 +106,14 @@ function update() {
   }
   ship.pos.y += scrY;
 
-  /*
-  decks.forEach((d, i) => {
-    color(i === 0 ? "black" : "light_black");
-    d.pos.add(-ship.vel.x, scrY);
-    rect(d.pos, d.width, 3);
-    if (i === 0) {
-      color("yellow");
-      rect(0, d.pos.y + 3, d.pos.x + d.width, 2);
-      rect(d.pos.x + d.width, 0, 1, d.pos.y + 5);
-    }
-  });
-*/
+//Update Score
+addScore(0.01);
 
-
-//figure out how to del later
+//Draw + Collisions
   color("black");
-  const c = char("a", ship.pos).isColliding.rect;
-  if (c.black) {
-    if (ship.vel.y > 1) {
-      play("explosion");
-      end();
-    } else {
-      const d = decks.shift();
-      play("powerUp");
-      addScore(floor(d.pos.x + d.width - ship.pos.x + 1), ship.pos);
-      const ld = decks[decks.length - 1];
-      decks.push({
-        pos: vec(ld.pos.x + ld.width * 0.7 + rnd(30), ld.pos.y + rnd(20, 40)),
-        width: rnd(25, 50),
-      });
-      ship.up = ship.nextUp;
-      ship.down = ship.nextDown;
-      ship.nextUp = floor(-difficulty * 4 + rnds(difficulty * 3));
-      ship.nextDown = floor(difficulty * 4 + rnds(difficulty * 2));
-      ship.vel.set(difficulty * 0.2, 0);
-    }
+  if (char("a", ship.pos).isColliding.rect.light_black) {
+    play("explosion");
+    end();
   }
 
   if (ship.pos.y < 0 || ship.pos.y > 100) {
