@@ -1,7 +1,7 @@
 title = "HI-FLY";
 
 description = ` [TAP] Flap
-[MOUSE] Left-Right
+[MOUSE] Direction
 [Hold] TBA
 `;
 
