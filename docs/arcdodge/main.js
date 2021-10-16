@@ -14,12 +14,13 @@ llllll
 
 const G = {
   WIDTH: 100,
-  HEIGHT: 100
+  HEIGHT: 100,
+  TIME_MAX: 130
 }
 
 options = {
   viewSize: {x: G.WIDTH, y: G.HEIGHT},
-  seed: 1,
+  seed: 3,
   isPlayingBgm: true,
   isReplayEnabled: true
 };
@@ -49,45 +50,60 @@ let rings;
 let ringticks;
 let nextAngleTo;
 let nextAngleFrom;
-let go;
+let timer;
+let randnum;
 
 function update() {
   if (!ticks) {
   ringticks = 0;
-  nextAngleTo = 10;
+  nextAngleTo = 5;
   nextAngleFrom = 0;
-  go = true;
+  randnum = 0;
+  timer = 0;
 
   player = {
     pos: vec(G.WIDTH * 0.5, G.HEIGHT * 0.5) };
 
 }
 
-//spawn random rings
-color("red");
-ringticks += difficulty;
+//spawn random rings ///////////////
+ringticks += (difficulty * 0.8);
+
+timer++; 
 
 
+if (timer < (G.TIME_MAX * 0.8)) {
+  color("light_red");
+}
+else {
+  color("red");
+}
 
-if(nextAngleTo == 10) {
+if(timer == G.TIME_MAX) {
   nextAngleTo = rndi(0, 10);
-  nextAngleFrom = nextAngleTo - 5; };
-  
-arc(50, 50, wrap(70 - ((ringticks / 3) % 70), 0, 70), 5, nextAngleFrom, nextAngleTo);
-arc(50, 50, wrap(100 - ((ringticks / 3) % 70), 0, 70), 5, 0, 5);
-//arc(centerX: num, centerY: num, radius: num, thickness?: num, angleFrom?: num, angleTo?: num)
+  nextAngleFrom = nextAngleTo - 5; 
+  randnum = rndi(1, 3);
+  timer = 0;
+};
 
-  //Update and draw Player
+arc(50, 50, wrap(70 - ((ringticks / 2) % 70), 0, 70), 5, nextAngleFrom, nextAngleTo);
+arc(50, 50, wrap(100 - ((ringticks / 2) % 70), 0, 70), 5, nextAngleFrom + randnum, nextAngleTo + randnum);
+/////////////////////////////////////
+
+//Update and draw Player
   player.pos = vec(input.pos.x, input.pos.y);
   player.pos.clamp(0, G.WIDTH, 0, G.HEIGHT);
 
   color ("black");
   char("a", player.pos);
 
+//Collisions
+  if(char("a",player.pos).isColliding.rect.red){
+    end();
+    play("explosion");
+  } 
+  else if(char("a",player.pos).isColliding.rect.light_red){
+    end(); 
+    play("explosion");
+  }
 }
-
-/*
-function randomize() {
-
-}
-*/
