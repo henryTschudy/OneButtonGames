@@ -21,10 +21,11 @@
 
 <script>
 // The title of the game to be displayed on the title screen
-title  =  "First Game";
+title  =  "Escape";
 
 // The description, which is also displayed on the title screen
-description  =  `TBD
+description  =  `Drag mouse to move
+Click to fire
 `;
 
 // The array of custom sprites
@@ -47,7 +48,7 @@ lbbbl
 ];
 
 const G = {
-    WIDTH: 100,
+    WIDTH: 125,
     HEIGHT: 150,
     STAR_SPEED_MIN: 0.5,
     STAR_SPEED_MAX: 1.0,
@@ -61,7 +62,8 @@ const G = {
 // Refer to the official documentation for all available options
 options  = {
     viewSize: {x: G.WIDTH, y: G.HEIGHT},
-    isReplayEnabled: true
+    isReplayEnabled: true,
+    theme: 'dark'
 };
 
 /**
@@ -118,7 +120,7 @@ function  update() {
         currentEnemySpeed =
             rnd(G.ENEMY_MIN_BASE_SPEED, G.ENEMY_MAX_BASE_SPEED) * difficulty;
         off = rndi(0, 17)
-        for (let i = 0; i < 17; i++) {
+        for (let i = 0; i < 14; i++) {
             if (i != off){
                 // Spawn Logic
                 // vector that contains two points
@@ -135,7 +137,7 @@ function  update() {
                 const real_spawn = spawn[rand]
                 const start = vec(real_spawn.x, real_spawn.y)
                 */
-                x = 4 * i
+                x = 10 * i
                 y = -5
                 enemies.push({ 
                     pos: vec(x, y),
@@ -144,6 +146,8 @@ function  update() {
                 })
             }
         }
+        ammo++
+        addScore(1)
     }
 
     player.pos = vec(input.pos.x, input.pos.y);
@@ -159,7 +163,7 @@ function  update() {
         });
         // Reset the firing cooldown
         player.firingCooldown = G.PLAYER_FIRE_RATE;
-
+        ammo --;
         color("yellow");
         // Generate particles
         particle(
@@ -216,7 +220,8 @@ function  update() {
             e.start = start
             e.angle = real_spawn.angleTo(player.pos)
         }*/
-        return (isCollidingWithFBullets || distX > G.HEIGHT + 30 || distY > G.WIDTH + 30);
+        
+        return (isCollidingWithFBullets || e.pos.y > G.HEIGHT + 10);
     });
     remove(fBullets, (fb) => {
         // Interaction from fBullets to enemies, after enemies have been drawn
